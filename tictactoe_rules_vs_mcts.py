@@ -154,3 +154,38 @@ class MCTSAgent:
         # Pick the best child based on highest visit counts
         best_child = max(root.children, key=lambda c: c.visits)
         return best_child.last_move
+
+# ==========================================
+# 4. TESTING THE DIFFERENCE
+# ==========================================
+if __name__ == "__main__":
+    # Setup a mid-game board state where:
+    # - It's X's turn
+    # - Nobody can win on this immediate turn
+    # - Nobody needs to block on this immediate turn
+    #
+    #   X | . | O
+    #  -----------
+    #   . | O | .
+    #  -----------
+    #   X | . | .
+    mid_game_board = [[1, 0, -1], [0, -1, 0], [1, 0, 0]]
+
+    print("Initial Board Position (X's turn):")
+    for row in mid_game_board:
+        print(row)
+    print("-" * 40)
+
+    # 1. Test Traditional Rule Base
+    traditional_agent = TraditionalRuleAgent(player=PLAYER_X)
+    print("Executing Traditional Agent...")
+    trad_move = traditional_agent.select_move(mid_game_board)
+    print(f"Traditional Agent picked move: {trad_move}")
+
+    print("-" * 40)
+
+    # 2. Test MCTS Sampling
+    mcts_agent = MCTSAgent(player=PLAYER_X, iterations=100)
+    print("Executing MCTS Agent...")
+    mcts_move = mcts_agent.select_move(mid_game_board)
+    print(f"MCTS Agent picked move: {mcts_move}")
