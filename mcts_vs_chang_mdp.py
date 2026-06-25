@@ -208,7 +208,7 @@ class UCTSolver:
 
 
 # 4. EXECUTION AND COMPARISON
-# ==========================================
+
 if __name__ == "__main__":
     # Initialize our environment
     env = GridWorldMDP()
