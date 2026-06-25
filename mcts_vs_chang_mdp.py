@@ -116,7 +116,7 @@ class ChangEtAlSolver:
 
 
 # 3. UCT ALGORITHM (Persistent Search Tree)
-# ==========================================
+
 class UCTNode:
 
     def __init__(self, state, parent=None):
