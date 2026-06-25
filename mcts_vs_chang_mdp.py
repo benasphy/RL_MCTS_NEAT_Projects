@@ -58,7 +58,6 @@ class GridWorldMDP:
 
 
 # 2. CHANG ET AL. ALGORITHM (Depth-First, No Cache)
-# ==========================================
 class ChangEtAlSolver:
 
     def __init__(self, mdp, depth_limit=4, num_samples=15):
