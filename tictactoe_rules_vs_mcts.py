@@ -69,3 +69,88 @@ class TraditionalRuleAgent:
         # or massive nested If-Then logic. Here we fallback to show it hit the dead-zone.
         print(" -> [Rule Failed] No Win/Block. Must fall back to raw tree enumeration.")
         return get_legal_moves(board)[0]  # Dumb fallback for illustration
+
+# ==========================================
+# 3. MONTE CARLO TREE SEARCH APPROACH (Sampling)
+# ==========================================
+class MCTSNode:
+
+    def __init__(self, board, player_to_move, parent=None, last_move=None):
+        self.board = board
+        self.player_to_move = player_to_move
+        self.parent = parent
+        self.last_move = last_move
+        self.children = []
+        self.visits = 0
+        self.wins = 0.0
+
+
+class MCTSAgent:
+
+    def __init__(self, player, iterations=150):
+        self.player = player
+        self.opponent = -player
+        self.iterations = iterations
+
+    def select_move(self, board):
+        root = MCTSNode(board, self.player)
+        total_rollouts = 0
+
+        for _ in range(self.iterations):
+            node = root
+            sim_board = copy.deepcopy(board)
+            curr_player = self.player
+
+            # --- Selection & Expansion ---
+            # If nodes are already expanded, dig down. Otherwise, expand a new child.
+            legal_moves = get_legal_moves(sim_board)
+            if not is_win(sim_board, self.opponent) and legal_moves:
+                # Simple expansion: if children don't match legal moves, create one
+                if len(node.children) < len(legal_moves):
+                    untried_moves = [
+                        m for m in legal_moves if m not in [c.last_move for c in node.children]
+                    ]
+                    move = random.choice(untried_moves)
+                    sim_board = make_move(sim_board, move, curr_player)
+                    new_node = MCTSNode(
+                        sim_board, -curr_player, parent=node, last_move=move
+                    )
+                    node.children.append(new_node)
+                    node = new_node
+                else:
+                    # Select using simplified UCB1
+                    node = max(
+                        node.children,
+                        key=lambda c: (c.wins / c.visits)
+                        + 1.4 * math.sqrt(math.log(node.visits) / c.visits),
+                    )
+                    sim_board = node.board
+                curr_player = node.player_to_move
+
+            # --- Rollout (SAMPLING the opposing moves randomly) ---
+            rollout_player = curr_player
+            while not is_win(sim_board, PLAYER_X) and not is_win(sim_board, PLAYER_O) and get_legal_moves(sim_board):
+                move = random.choice(get_legal_moves(sim_board))
+                sim_board = make_move(sim_board, move, rollout_player)
+                rollout_player = -rollout_player
+                total_rollouts += 1
+
+            # --- Backpropagation ---
+            # Score outcome from perspective of Root Player (X)
+            if is_win(sim_board, self.player):
+                reward = 1.0
+            elif is_win(sim_board, self.opponent):
+                reward = 0.0
+            else:
+                reward = 0.5  # Draw
+
+            while node is not None:
+                node.visits += 1
+                # If the parent node was the one who made the winning move, reward it
+                node.wins += reward if node.player_to_move == self.opponent else (1 - reward)
+                node = node.parent
+
+        print(f" -> [MCTS Sampled] Ran {total_rollouts} random future moves across options.")
+        # Pick the best child based on highest visit counts
+        best_child = max(root.children, key=lambda c: c.visits)
+        return best_child.last_move
