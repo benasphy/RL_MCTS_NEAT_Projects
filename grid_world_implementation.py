@@ -69,3 +69,6 @@ for iteration in range(100):
             v_sum += pi * (reward + gamma * V[next_s])
         V_new[s] = v_sum
     V = V_new
+
+print("Converged State-Value Function V(s) under random policy:")
+print(V.reshape(3, 3))
