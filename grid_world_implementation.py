@@ -48,3 +48,8 @@ class GridWorldMDP:
 # --- Iterative Evaluation Test ---
 env = GridWorldMDP()
 gamma = 1.0
+
+# Initialize random values V(s) to 0
+V = np.zeros(env.num_states)
+# Uniform random policy evaluation profile
+pi = 0.25
