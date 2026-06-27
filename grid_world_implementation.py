@@ -20,3 +20,6 @@ class GridWorldMDP:
     
     def get_state_coord(self, state):
         return state // 3, state % 3
+    
+    def get_state_index(self, row, col):
+        return row * 3 + col
