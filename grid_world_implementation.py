@@ -44,3 +44,7 @@ class GridWorldMDP:
         is_terminal = (next_state == self.terminal_state)
         
         return next_state, reward, is_terminal
+
+# --- Iterative Evaluation Test ---
+env = GridWorldMDP()
+gamma = 1.0
