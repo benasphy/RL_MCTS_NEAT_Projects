@@ -23,3 +23,24 @@ class GridWorldMDP:
     
     def get_state_index(self, row, col):
         return row * 3 + col
+    
+    def step(self, state, action):
+        """
+        Returns a tuple of (next_state, reward, is_terminal)
+        """
+        if state == self.terminal_state:
+            return state, 0, True
+            
+        row, col = self.get_state_coord(state)
+        d_row, d_col = self.action_effects[action]
+        
+        # Compute target position
+        next_row = max(0, min(2, row + d_row))
+        next_col = max(0, min(2, col + d_col))
+        next_state = self.get_state_index(next_row, next_col)
+        
+        # Reward structure
+        reward = -1
+        is_terminal = (next_state == self.terminal_state)
+        
+        return next_state, reward, is_terminal
