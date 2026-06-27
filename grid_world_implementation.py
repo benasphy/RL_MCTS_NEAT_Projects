@@ -53,3 +53,19 @@ gamma = 1.0
 V = np.zeros(env.num_states)
 # Uniform random policy evaluation profile
 pi = 0.25
+
+# Simple Policy Evaluation loop to verify our math
+for iteration in range(100):
+    V_new = np.zeros(env.num_states)
+    for s in range(env.num_states):
+        if s == env.terminal_state:
+            V_new[s] = 0
+            continue
+            
+        v_sum = 0
+        for a in env.actions:
+            next_s, reward, _ = env.step(s, a)
+            # Bellman Expectation update step
+            v_sum += pi * (reward + gamma * V[next_s])
+        V_new[s] = v_sum
+    V = V_new
