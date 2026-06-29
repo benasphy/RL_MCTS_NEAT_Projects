@@ -63,3 +63,23 @@ for s in range(env.num_states):
     optimal_policy_vi[s] = np.argmax(q_values)
 
 print_policy(optimal_policy_vi, env)
+
+# =====================================================================
+# PROJECT 2: POLICY ITERATION
+# =====================================================================
+print("\n--- Running Policy Iteration ---")
+V_pi = np.zeros(env.num_states)
+policy = np.zeros(env.num_states, dtype=int) # Start with all actions facing Up (0)
+
+while True:
+    # Phase 1: Policy Evaluation
+    while True:
+        delta = 0
+        for s in range(env.num_states):
+            if s == env.terminal_state: continue
+            v = V_pi[s]
+            chosen_action = policy[s]
+            next_s, reward, _ = env.step(s, chosen_action)
+            V_pi[s] = reward + gamma * V_pi[next_s]
+            delta = max(delta, abs(v - V_pi[s]))
+        if delta < theta: break
