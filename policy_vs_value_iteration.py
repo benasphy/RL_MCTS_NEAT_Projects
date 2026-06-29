@@ -31,3 +31,26 @@ def print_policy(policy, env):
 env = GridWorldMDP()
 gamma = 1.0
 theta = 1e-6 # Convergence threshold
+
+# =====================================================================
+# PROJECT 1: VALUE ITERATION
+# =====================================================================
+print("--- Running Value Iteration ---")
+V_val = np.zeros(env.num_states)
+
+while True:
+    delta = 0
+    for s in range(env.num_states):
+        if s == env.terminal_state: continue
+        v = V_val[s]
+        
+        # Calculate Q(s,a) for all actions
+        q_values = []
+        for a in env.actions:
+            next_s, reward, _ = env.step(s, a)
+            q_values.append(reward + gamma * V_val[next_s])
+            
+        # Value Iteration Update: V(s) = max_a Q(s,a)
+        V_val[s] = max(q_values)
+        delta = max(delta, abs(v - V_val[s]))
+    if delta < theta: break
