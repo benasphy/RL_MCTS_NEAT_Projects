@@ -17,3 +17,12 @@ class GridWorldMDP:
         next_col = max(0, min(2, col + d_col))
         next_state = next_row * 3 + next_col
         return next_state, -1, (next_state == self.terminal_state)
+
+def print_policy(policy, env):
+    grid = []
+    for s in range(env.num_states):
+        if s == env.terminal_state:
+            grid.append("G") # Goal
+        else:
+            grid.append(env.action_names[policy[s]])
+    print(np.array(grid).reshape(3, 3))
