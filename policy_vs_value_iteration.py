@@ -26,3 +26,8 @@ def print_policy(policy, env):
         else:
             grid.append(env.action_names[policy[s]])
     print(np.array(grid).reshape(3, 3))
+    
+# --- Initialization ---
+env = GridWorldMDP()
+gamma = 1.0
+theta = 1e-6 # Convergence threshold
