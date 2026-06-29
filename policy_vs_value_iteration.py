@@ -54,3 +54,12 @@ while True:
         V_val[s] = max(q_values)
         delta = max(delta, abs(v - V_val[s]))
     if delta < theta: break
+
+# Extract Optimal Policy from Value Iteration
+optimal_policy_vi = np.zeros(env.num_states, dtype=int)
+for s in range(env.num_states):
+    if s == env.terminal_state: continue
+    q_values = [env.step(s, a)[1] + gamma * V_val[env.step(s, a)[0]] for a in env.actions]
+    optimal_policy_vi[s] = np.argmax(q_values)
+
+print_policy(optimal_policy_vi, env)
