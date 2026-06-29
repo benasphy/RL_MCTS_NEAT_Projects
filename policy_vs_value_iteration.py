@@ -83,3 +83,22 @@ while True:
             V_pi[s] = reward + gamma * V_pi[next_s]
             delta = max(delta, abs(v - V_pi[s]))
         if delta < theta: break
+    
+    # Phase 2: Policy Improvement
+    policy_stable = True
+    for s in range(env.num_states):
+        if s == env.terminal_state: continue
+        old_action = policy[s]
+        
+        q_values = []
+        for a in env.actions:
+            next_s, reward, _ = env.step(s, a)
+            q_values.append(reward + gamma * V_pi[next_s])
+            
+        policy[s] = np.argmax(q_values)
+        if old_action != policy[s]:
+            policy_stable = False
+            
+    if policy_stable: break
+
+print_policy(policy, env)
