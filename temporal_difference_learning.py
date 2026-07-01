@@ -52,3 +52,9 @@ print(np.round(V.reshape(3, 3), 1))
 # =====================================================================
 print("\n--- Running SARSA On-Policy Control ---")
 Q = np.zeros((env.num_states, len(env.actions)))
+
+def epsilon_greedy_policy(state, Q_table, eps):
+    if np.random.rand() < eps:
+        return np.random.choice(len(Q_table[state]))
+    else:
+        return np.argmax(Q_table[state])
