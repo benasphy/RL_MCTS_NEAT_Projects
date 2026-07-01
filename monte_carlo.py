@@ -20,3 +20,12 @@ class EnvironmentBlackBox:
         next_col = max(0, min(2, col + d_col))
         next_state = next_row * 3 + next_col
         return next_state, -1, (next_state == self.terminal_state)
+
+# =====================================================================
+# PROJECT 1: FIRST-VISIT MONTE CARLO PREDICTION
+# =====================================================================
+print("--- Running First-Visit MC Prediction (5000 Episodes) ---")
+env = EnvironmentBlackBox()
+V_estimates = np.zeros(env.num_states)
+state_returns_count = np.zeros(env.num_states)
+    
