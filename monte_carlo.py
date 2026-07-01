@@ -28,4 +28,15 @@ print("--- Running First-Visit MC Prediction (5000 Episodes) ---")
 env = EnvironmentBlackBox()
 V_estimates = np.zeros(env.num_states)
 state_returns_count = np.zeros(env.num_states)
+
+for episode in range(5000):
+    state = env.reset()
+    trajectory = []
+    done = False
     
+    # 1. Generate a trajectory using a random uniform policy
+    while not done:
+        action = np.random.choice(env.actions)
+        next_state, reward, done = env.step(state, action)
+        trajectory.append((state, action, reward))
+        state = next_state
