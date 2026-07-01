@@ -40,3 +40,18 @@ for episode in range(5000):
         next_state, reward, done = env.step(state, action)
         trajectory.append((state, action, reward))
         state = next_state
+    
+    # 2. Process the collected trajectory for returns
+    g = 0
+    visited_states = set()
+    # Traverse backwards to compute returns efficiently
+    for s, a, r in reversed(trajectory):
+        g = r + 1.0 * g  # gamma = 1.0
+        if s not in visited_states:
+            visited_states.add(s)
+            state_returns_count[s] += 1
+            # Incremental update rule
+            V_estimates[s] += (1.0 / state_returns_count[s]) * (g - V_estimates[s])
+
+print("Empirical State Values V(s):")
+print(np.round(V_estimates.reshape(3, 3), 1))
