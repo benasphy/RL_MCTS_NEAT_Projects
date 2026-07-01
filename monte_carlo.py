@@ -88,3 +88,11 @@ for episode in range(5000):
             visited_state_action_pairs.add((s, a))
             N_q[s, a] += 1
             Q[s, a] += (1.0 / N_q[s, a]) * (g - Q[s, a])
+
+# Extract final deterministic policy from the learned Q-table
+final_policy = np.argmax(Q, axis=1)
+action_symbols = {0: "↑", 1: "↓", 2: "←", 3: "→"}
+grid_policy = [action_symbols[a] if i != env.terminal_state else "G" for i, a in enumerate(final_policy)]
+
+print("Discovered Optimal Policy via MC Control:")
+print(np.array(grid_policy).reshape(3, 3))
