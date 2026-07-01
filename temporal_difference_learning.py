@@ -46,3 +46,9 @@ for episode in range(episodes):
 
 print("Converged V(s) via TD(0):")
 print(np.round(V.reshape(3, 3), 1))
+
+# =====================================================================
+# PROJECT 2: SARSA CONTROL ENGINE
+# =====================================================================
+print("\n--- Running SARSA On-Policy Control ---")
+Q = np.zeros((env.num_states, len(env.actions)))
