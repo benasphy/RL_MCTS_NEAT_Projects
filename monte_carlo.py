@@ -63,3 +63,9 @@ print("\n--- Running On-Policy Epsilon-Greedy MC Control (5000 Episodes) ---")
 Q = np.zeros((env.num_states, len(env.actions)))
 N_q = np.zeros((env.num_states, len(env.actions)))
 epsilon = 0.15
+
+def select_action(state, Q_table, epsilon, actions):
+    if np.random.rand() < epsilon:
+        return np.random.choice(actions)
+    else:
+        return np.argmax(Q_table[state])
