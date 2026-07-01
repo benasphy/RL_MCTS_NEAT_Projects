@@ -11,3 +11,12 @@ class EnvironmentBlackBox:
     def reset(self):
         # Always start at state 0 for evaluations, or random for general tracking
         return 0
+    def step(self, state, action):
+        if state == self.terminal_state:
+            return state, 0, True
+        row, col = state // 3, state % 3
+        d_row, d_col = self.action_effects[action]
+        next_row = max(0, min(2, row + d_row))
+        next_col = max(0, min(2, col + d_col))
+        next_state = next_row * 3 + next_col
+        return next_state, -1, (next_state == self.terminal_state)
