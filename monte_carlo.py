@@ -69,3 +69,22 @@ def select_action(state, Q_table, epsilon, actions):
         return np.random.choice(actions)
     else:
         return np.argmax(Q_table[state])
+for episode in range(5000):
+    state = np.random.choice(env.num_states - 1) # Start randomly to spread exploration
+    trajectory = []
+    done = False
+    
+    while not done:
+        action = select_action(state, Q, epsilon, env.actions)
+        next_state, reward, done = env.step(state, action)
+        trajectory.append((state, action, reward))
+        state = next_state
+        
+    g = 0
+    visited_state_action_pairs = set()
+    for s, a, r in reversed(trajectory):
+        g = r + 1.0 * g
+        if (s, a) not in visited_state_action_pairs:
+            visited_state_action_pairs.add((s, a))
+            N_q[s, a] += 1
+            Q[s, a] += (1.0 / N_q[s, a]) * (g - Q[s, a])
