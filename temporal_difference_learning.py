@@ -58,3 +58,25 @@ def epsilon_greedy_policy(state, Q_table, eps):
         return np.random.choice(len(Q_table[state]))
     else:
         return np.argmax(Q_table[state])
+
+for episode in range(episodes):
+    state = 0
+    done = False
+    
+    # Choose initial action A from state S using policy
+    action = epsilon_greedy_policy(state, Q, epsilon)
+    
+    while not done:
+        # Take action A, observe R, S'
+        next_state, reward, done = env.step(state, action)
+        
+        # Choose next action A' from state S' using policy (Crucial for SARSA)
+        next_action = epsilon_greedy_policy(next_state, Q, epsilon)
+        
+        # SARSA Update
+        td_target = reward + gamma * Q[next_state, next_action]
+        Q[state, action] += alpha * (td_target - Q[state, action])
+        
+        # Step forward
+        state = next_state
+        action = next_action
