@@ -80,3 +80,10 @@ for episode in range(episodes):
         # Step forward
         state = next_state
         action = next_action
+        
+# Map Q-table back to symbols
+action_symbols = {0: "↑", 1: "↓", 2: "←", 3: "→"}
+grid_policy = [action_symbols[np.argmax(Q[s])] if s != env.terminal_state else "G" for s in range(env.num_states)]
+
+print("Discovered Policy via SARSA Control:")
+print(np.array(grid_policy).reshape(3, 3))
