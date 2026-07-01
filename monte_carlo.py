@@ -55,3 +55,11 @@ for episode in range(5000):
 
 print("Empirical State Values V(s):")
 print(np.round(V_estimates.reshape(3, 3), 1))
+
+# =====================================================================
+# PROJECT 2: ON-POLICY EPSILON-GREEDY MC CONTROL
+# =====================================================================
+print("\n--- Running On-Policy Epsilon-Greedy MC Control (5000 Episodes) ---")
+Q = np.zeros((env.num_states, len(env.actions)))
+N_q = np.zeros((env.num_states, len(env.actions)))
+epsilon = 0.15
