@@ -23,3 +23,26 @@ alpha = 0.1  # Learning rate
 epsilon = 0.1
 episodes = 2000
 env = EnvironmentBlackBox()
+
+# =====================================================================
+# PROJECT 1: TD(0) PREDICTION
+# =====================================================================
+print("--- Running TD(0) Prediction ---")
+V = np.zeros(env.num_states)
+
+for episode in range(episodes):
+    state = 0  # Start at cell 0
+    done = False
+    
+    while not done:
+        action = np.random.choice(env.actions) # Random Policy
+        next_state, reward, done = env.step(state, action)
+        
+        # TD Target and Update
+        td_target = reward + gamma * V[next_state]
+        V[state] += alpha * (td_target - V[state])
+        
+        state = next_state
+
+print("Converged V(s) via TD(0):")
+print(np.round(V.reshape(3, 3), 1))
