@@ -73,3 +73,7 @@ def extract_path(Q_table, name):
         path.append(state)
         steps += 1
     print(f"{name} Optimal Route: {' -> '.join(map(str, path))}")
+
+print("--- The Results ---")
+extract_path(Q_val, "Q-Learning")
+extract_path(Q_sarsa, "SARSA")
