@@ -61,3 +61,15 @@ for episode in range(episodes):
         Q_val[state, action] += alpha * (td_target - Q_val[state, action])
         
         state = next_state
+        
+# Display Paths
+def extract_path(Q_table, name):
+    state = env.start_state
+    path = [state]
+    steps = 0
+    while state != env.goal_state and steps < 10:
+        action = np.argmax(Q_table[state])
+        state, _, _ = env.step(state, action)
+        path.append(state)
+        steps += 1
+    print(f"{name} Optimal Route: {' -> '.join(map(str, path))}")
