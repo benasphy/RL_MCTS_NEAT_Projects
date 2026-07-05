@@ -37,3 +37,27 @@ epsilon = 0.25 # High exploration rate to emphasize the policy split
 episodes = 3000
 
 env = CliffWalkingMDP()
+
+# =====================================================================
+# ALGORITHM 1: Q-LEARNING
+# =====================================================================
+Q_val = np.zeros((env.num_states, len(env.actions)))
+
+for episode in range(episodes):
+    state = env.start_state
+    done = False
+    
+    while not done:
+        # Action selection using Behavior Policy (epsilon-greedy)
+        if np.random.rand() < epsilon:
+            action = np.random.choice(env.actions)
+        else:
+            action = np.random.choice(np.flatnonzero(Q_val[state] == Q_val[state].max()))
+            
+        next_state, reward, done = env.step(state, action)
+        
+        # Q-Learning Target: Uses max over next actions (Target Policy is purely greedy)
+        td_target = reward + gamma * np.max(Q_val[next_state])
+        Q_val[state, action] += alpha * (td_target - Q_val[state, action])
+        
+        state = next_state
