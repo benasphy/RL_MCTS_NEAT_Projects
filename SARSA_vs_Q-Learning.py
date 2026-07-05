@@ -29,3 +29,11 @@ class CliffWalkingMDP:
             return next_state, 0, True
             
         return next_state, -1, False
+
+# Hyperparameters
+gamma = 1.0
+alpha = 0.1
+epsilon = 0.25 # High exploration rate to emphasize the policy split
+episodes = 3000
+
+env = CliffWalkingMDP()
