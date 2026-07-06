@@ -25,3 +25,8 @@ class RBFFeatureExtractor:
         # Place 3 RBF anchors across the 1D track
         self.centers = np.array([0.0, 0.5, 1.0])
         self.sigma = 0.25 # Width of the Gaussian curves
+    
+    def get_features(self, state):
+        # Calculate Gaussian activation for each anchor center
+        features = np.exp(-((state - self.centers) ** 2) / (2 * self.sigma ** 2))
+        return features
