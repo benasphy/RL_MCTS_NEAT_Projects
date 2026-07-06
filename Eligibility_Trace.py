@@ -26,3 +26,11 @@ episodes = 300
 
 env = GridWorldMDP()
 Q = np.zeros((env.num_states, len(env.actions)))
+
+def epsilon_greedy(state, Q_table, eps):
+    if np.random.rand() < eps:
+        return np.random.choice(len(Q_table[state]))
+    else:
+        return np.argmax(Q_table[state])
+
+print(f"--- Training SARSA(λ) with λ={lam} ---")
