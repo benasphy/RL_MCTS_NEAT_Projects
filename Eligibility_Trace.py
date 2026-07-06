@@ -34,3 +34,32 @@ def epsilon_greedy(state, Q_table, eps):
         return np.argmax(Q_table[state])
 
 print(f"--- Training SARSA(λ) with λ={lam} ---")
+
+for episode in range(episodes):
+    # Initialize eligibility traces to zero at the start of every episode
+    E = np.zeros((env.num_states, len(env.actions)))
+    
+    state = 0
+    action = epsilon_greedy(state, Q, epsilon)
+    done = False
+    
+    while not done:
+        next_state, reward, done = env.step(state, action)
+        next_action = epsilon_greedy(next_state, Q, epsilon)
+        
+        # 1. Calculate standard TD Error
+        td_target = reward + gamma * Q[next_state, next_action]
+        td_error = td_target - Q[state, action]
+        
+        # 2. Accumulating Traces update rule
+        E[state, action] += 1
+        
+        # 3. Backward View Update: Update ALL state-action pairs simultaneously
+        # Using NumPy vectorization to update the entire table in one go
+        Q += alpha * td_error * E
+        
+        # 4. Decay the eligibility traces for the next step
+        E = gamma * lam * E
+        
+        state = next_state
+        action = next_action
