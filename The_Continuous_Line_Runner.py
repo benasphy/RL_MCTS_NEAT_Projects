@@ -18,3 +18,10 @@ class ContinuousLineEnv:
         reward = -1  # Every second spent costs time
         done = (self.state >= self.goal)
         return self.state, reward, done
+
+class RBFFeatureExtractor:
+    """Converts a single continuous float state into an RBF feature array."""
+    def __init__(self):
+        # Place 3 RBF anchors across the 1D track
+        self.centers = np.array([0.0, 0.5, 1.0])
+        self.sigma = 0.25 # Width of the Gaussian curves
