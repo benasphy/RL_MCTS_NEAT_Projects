@@ -30,3 +30,7 @@ class RBFFeatureExtractor:
         # Calculate Gaussian activation for each anchor center
         features = np.exp(-((state - self.centers) ** 2) / (2 * self.sigma ** 2))
         return features
+
+# --- Run Semi-Gradient TD(0) ---
+env = ContinuousLineEnv()
+extractor = RBFFeatureExtractor()
