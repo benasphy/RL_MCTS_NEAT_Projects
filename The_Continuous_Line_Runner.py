@@ -34,3 +34,11 @@ class RBFFeatureExtractor:
 # --- Run Semi-Gradient TD(0) ---
 env = ContinuousLineEnv()
 extractor = RBFFeatureExtractor()
+
+# Linear weights initialized to 0 (one weight per RBF center)
+weights = np.zeros(3)
+alpha = 0.05
+gamma = 1.0
+episodes = 500
+
+print("--- Training Linear Semi-Gradient TD(0) Agent ---")
