@@ -42,3 +42,33 @@ gamma = 1.0
 episodes = 500
 
 print("--- Training Linear Semi-Gradient TD(0) Agent ---")
+
+for episode in range(episodes):
+    state = env.reset()
+    done = False
+    
+    while not done:
+        # 1. Get current features and baseline prediction
+        x_s = extractor.get_features(state)
+        v_s = np.dot(weights, x_s)
+        
+        # 2. Act
+        next_state, reward, done = env.step(action=None)
+        
+        # 3. Calculate target
+        if done:
+            td_target = reward
+        else:
+            x_next = extractor.get_features(next_state)
+            v_next = np.dot(weights, x_next)
+            td_target = reward + gamma * v_next
+            
+        # 4. Compute TD Error
+        td_error = td_target - v_s
+        
+        # 5. Weight Update: w <- w + alpha * error * gradient(x_s)
+        weights += alpha * td_error * x_s
+        
+        state = next_state
+
+print("\nFinal Trained Weights Vector (w):", np.round(weights, 2))
