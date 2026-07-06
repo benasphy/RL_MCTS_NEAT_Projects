@@ -72,3 +72,10 @@ for episode in range(episodes):
         state = next_state
 
 print("\nFinal Trained Weights Vector (w):", np.round(weights, 2))
+
+# Let's read out predictions across the continuous span
+print("\n--- Value Function Inference Check ---")
+for test_state in [0.0, 0.25, 0.5, 0.75, 0.95]:
+    feats = extractor.get_features(test_state)
+    pred_val = np.dot(weights, feats)
+    print(f"State position: {test_state:<4} -> Estimated Value V(s): {pred_val:.2f}")
