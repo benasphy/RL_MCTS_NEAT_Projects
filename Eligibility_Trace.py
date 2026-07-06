@@ -16,3 +16,13 @@ class GridWorldMDP:
         next_col = max(0, min(2, col + d_col))
         next_state = next_row * 3 + next_col
         return next_state, -1, (next_state == self.terminal_state)
+
+# --- Hyperparameters ---
+gamma = 0.95
+alpha = 0.1
+epsilon = 0.1
+lam = 0.8  # Lambda trace decay parameter
+episodes = 300
+
+env = GridWorldMDP()
+Q = np.zeros((env.num_states, len(env.actions)))
