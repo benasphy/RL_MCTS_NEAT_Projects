@@ -36,3 +36,12 @@ class ValueNetwork(nn.Module):
         
     def forward(self, x):
         return self.network(x)
+env = ContinuousLineEnv()
+model = ValueNetwork()
+optimizer = optim.Adam(model.parameters(), lr=0.005)
+loss_fn = nn.MSELoss()
+
+gamma = 1.0
+episodes = 600
+
+print("--- Training Custom PyTorch Semi-Gradient TD(0) Loop ---")
