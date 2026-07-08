@@ -21,3 +21,18 @@ class ContinuousLineEnv:
         reward = -1.0
         done = (self.state >= self.goal)
         return np.array([self.state], dtype=np.float32), reward, done
+    
+class ValueNetwork(nn.Module):
+    def __init__(self):
+        super(ValueNetwork, self).__init__()
+        # Takes 1 raw continuous state float, passes through hidden layers, outputs 1 value
+        self.network = nn.Sequential(
+            nn.Linear(1, 32),
+            nn.ReLU(),
+            nn.Linear(32, 32),
+            nn.ReLU(),
+            nn.Linear(32, 1)
+        )
+        
+    def forward(self, x):
+        return self.network(x)
