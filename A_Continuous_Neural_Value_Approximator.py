@@ -15,3 +15,9 @@ class ContinuousLineEnv:
     def reset(self):
         self.state = 0.0
         return np.array([self.state], dtype=np.float32)
+    def step(self):
+        step_size = np.random.uniform(0.05, 0.15)
+        self.state = min(self.goal, self.state + step_size)
+        reward = -1.0
+        done = (self.state >= self.goal)
+        return np.array([self.state], dtype=np.float32), reward, done
