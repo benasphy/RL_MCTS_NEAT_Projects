@@ -87,3 +87,12 @@ for episode in range(episodes):
         state = next_state
 
 print("\nTraining Complete.")
+
+# --- Verification Inference Check ---
+print("\n--- Neural Value Function Inference Check ---")
+model.eval() # Set network to evaluation mode
+with torch.no_grad():
+    for test_pos in [0.0, 0.25, 0.5, 0.75, 0.95]:
+        t_state = torch.tensor([test_pos], dtype=torch.float32)
+        pred_val = model(t_state).item()
+        print(f"Continuous position: {test_pos:<4} -> Neural Value V(s): {pred_val:.2f}")
