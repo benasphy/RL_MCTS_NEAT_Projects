@@ -35,3 +35,16 @@ class DiscreteLineEnv:
         reward = -1.0 if self.state < self.goal else 0.0
         done = (self.state >= self.goal)
         return np.array([self.state], dtype=np.float32), reward, done
+
+class QNetwork(nn.Module):
+    def __init__(self):
+        super(QNetwork, self).__init__()
+        self.net = nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 2) # Outputs Q-values for 2 actions: [Stay, Move]
+        )
+    def forward(self, x):
+        return self.net(x)
