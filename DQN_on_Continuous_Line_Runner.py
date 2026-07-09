@@ -48,3 +48,18 @@ class QNetwork(nn.Module):
         )
     def forward(self, x):
         return self.net(x)
+
+# --- Components Initialization ---
+env = DiscreteLineEnv()
+online_net = QNetwork()
+target_net = QNetwork()
+target_net.load_state_dict(online_net.state_dict()) # Synchronize initially
+
+optimizer = optim.Adam(online_net.parameters(), lr=LR)
+loss_fn = nn.MSELoss()
+replay_buffer = deque(maxlen=MEMORY_SIZE)
+
+epsilon = EPSILON_START
+total_steps = 0
+
+print("--- Training Deep Q-Network (DQN) ---")
