@@ -122,3 +122,13 @@ for episode in range(EPISODES):
     epsilon = max(EPSILON_END, epsilon * EPSILON_DECAY)
 
 print("Training Complete.\n")
+
+# --- Verification Evaluation ---
+online_net.eval()
+print("--- Learned Action-Value (Q) Profiles ---")
+with torch.no_grad():
+    for test_pos in [0.0, 0.5, 0.85]:
+        st = torch.tensor([[test_pos]], dtype=torch.float32)
+        q_vals = online_net(st).numpy()[0]
+        best_act = "MOVE" if np.argmax(q_vals) == 1 else "STAY"
+        print(f"Position: {test_pos:<4} -> Q-Values: [Stay: {q_vals[0]:.2f}, Move: {q_vals[1]:.2f}] -> Decision: {best_act}")
