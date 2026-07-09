@@ -15,3 +15,8 @@ EPSILON_START = 1.0
 EPSILON_END = 0.05
 EPSILON_DECAY = 0.995
 EPISODES = 300
+
+class DiscreteLineEnv:
+    def __init__(self):
+        self.state = 0.0
+        self.goal = 1.0
