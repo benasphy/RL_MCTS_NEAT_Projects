@@ -63,3 +63,62 @@ epsilon = EPSILON_START
 total_steps = 0
 
 print("--- Training Deep Q-Network (DQN) ---")
+
+for episode in range(EPISODES):
+    state = env.reset()
+    done = False
+    
+    while not done:
+        total_steps += 1
+        
+        # 1. Epsilon-Greedy Action Selection
+        if random.random() < epsilon:
+            action = random.choice([0, 1])
+        else:
+            state_t = torch.from_numpy(state).unsqueeze(0)
+            with torch.no_grad():
+                action = torch.argmax(online_net(state_t)).item()
+                
+        # 2. Environment Step
+        next_state, reward, done = env.step(action)
+        
+        # 3. Store Transition in Replay Buffer
+        replay_buffer.append((state, action, reward, next_state, done))
+        state = next_state
+        
+        # 4. Optimize Online Network if Buffer has enough data
+        if len(replay_buffer) > BATCH_SIZE:
+            # Sample random mini-batch (Breaks auto-correlation!)
+            batch = random.sample(replay_buffer, BATCH_SIZE)
+            states, actions, rewards, next_states, dones = zip(*batch)
+            
+            # Convert to tensors
+            states_t = torch.from_numpy(np.array(states))
+            actions_t = torch.tensor(actions, dtype=torch.long).unsqueeze(1)
+            rewards_t = torch.tensor(rewards, dtype=torch.float32).unsqueeze(1)
+            next_states_t = torch.from_numpy(np.array(next_states))
+            dones_t = torch.tensor(dones, dtype=torch.float32).unsqueeze(1)
+            
+            # Gather Q(s, a) for chosen actions from the online network
+            current_q = online_net(states_t).gather(1, actions_t)
+            
+            # Calculate stable TD Targets using the Target Network
+            with torch.no_grad():
+                max_next_q = target_net(next_states_t).max(1)[0].unsqueeze(1)
+                target_q = rewards_t + (GAMMA * max_next_q * (1 - dones_t))
+                
+            # Compute Loss and Optimize
+            loss = loss_fn(current_q, target_q)
+            optimizer.zero_grad()
+            loss.backward()
+            online_net.utils = torch.nn.utils.clip_grad_norm_(online_net.parameters(), 1.0)
+            optimizer.step()
+            
+        # 5. Periodically Update Target Network Weights
+        if total_steps % TARGET_UPDATE_FREQ == 0:
+            target_net.load_state_dict(online_net.state_dict())
+            
+    # Decay exploration rate
+    epsilon = max(EPSILON_END, epsilon * EPSILON_DECAY)
+
+print("Training Complete.\n")
