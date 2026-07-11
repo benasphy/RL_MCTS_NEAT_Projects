@@ -131,3 +131,17 @@ for episode in range(EPISODES):
             target_net.load_state_dict(online_net.state_dict())
 
 print("Training Complete.\n")
+
+# --- Inference Check ---
+online_net.eval()
+print("--- Advanced Architecture Value Outputs ---")
+with torch.no_grad():
+    for test_pos in [0.1, 0.9]:
+        st = torch.tensor([[test_pos]], dtype=torch.float32)
+        q_vals = online_net(st).numpy()[0]
+        # Accessing the streams directly to read the internal decomposition!
+        features = online_net.feature_network(st)
+        v_val = online_net.value_stream(features).item()
+        a_vals = online_net.advantage_stream(features).numpy()[0]
+        
+        print(f"Position: {test_pos:<3} | State Value V(s): {v_val:.2f} | Advantages: [Stay: {a_vals[0]:.2f}, Move: {a_vals[1]:.2f}]")
