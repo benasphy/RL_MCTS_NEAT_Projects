@@ -79,3 +79,15 @@ for episode in range(EPISODES):
     # Simple Running Baseline for Variance Reduction (Mean of current trajectory returns)
     baseline = returns.mean()
     advantages = returns - baseline
+    
+    # 3. Calculate Policy Gradient Loss Pass
+    policy_loss = []
+    for state_t, action, advantage in zip(states, actions, advantages):
+        probs = policy(state_t)
+        dist = Categorical(probs)
+        
+        # Calculate log pi(a|s)
+        log_prob = dist.log_prob(torch.tensor(action))
+        
+        # Policy Gradient standard minimization loss term (Negative sign for Gradient *Ascent*)
+        policy_loss.append(-log_prob * advantage)
