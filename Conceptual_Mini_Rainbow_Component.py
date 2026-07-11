@@ -42,3 +42,14 @@ class MiniRainbowNetwork(nn.Module):
         # Apply Softmax across the atoms dimension to convert outputs to clean probabilities
         dist_probabilities = F.softmax(q_atoms, dim=-1)
         return dist_probabilities # Shape: [Batch, Actions, Atoms]
+
+# --- Functional Demonstration ---
+# Let's say our support points (Z) span from V_min = -10 to V_max = 10
+v_min, v_max, num_atoms = -10.0, 10.0, 51
+z_support = torch.linspace(v_min, v_max, num_atoms)
+
+model = MiniRainbowNetwork(num_actions=2, num_atoms=num_atoms)
+simulated_state = torch.randn(1, 4) # 1 sample batch, 4 state dimensions
+
+# Run forward pass to get categorical probability distributions
+action_distributions = model(simulated_state)
