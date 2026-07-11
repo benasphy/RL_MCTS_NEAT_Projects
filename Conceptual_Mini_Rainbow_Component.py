@@ -7,3 +7,9 @@ class MiniRainbowNetwork(nn.Module):
         super(MiniRainbowNetwork, self).__init__()
         self.num_actions = num_actions
         self.num_atoms = num_atoms
+        
+        # 1. Base Feature Extraction
+        self.feature_backbone = nn.Sequential(
+            nn.Linear(4, 64), # Simulating a 4D state input
+            nn.ReLU()
+        )
