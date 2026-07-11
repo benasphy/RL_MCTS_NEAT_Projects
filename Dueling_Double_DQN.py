@@ -28,3 +28,29 @@ class DiscreteLineEnv:
         self.state = min(self.goal, self.state)
         reward = -1.0 if self.state < self.goal else 0.0
         return np.array([self.state], dtype=np.float32), reward, (self.state >= self.goal)
+
+# =====================================================================
+# DUELING ARCHITECTURE NETWORK
+# =====================================================================
+class DuelingQNetwork(nn.Module):
+    def __init__(self):
+        super(DuelingQNetwork, self).__init__()
+        # Shared feature extractor base
+        self.feature_network = nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU()
+        )
+        
+        # Stream 1: State Value V(s) Head
+        self.value_stream = nn.Sequential(
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 1)
+        )
+        
+        # Stream 2: Action Advantage A(s,a) Head
+        self.advantage_stream = nn.Sequential(
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 2) # 2 actions: [Stay, Move]
+        )
