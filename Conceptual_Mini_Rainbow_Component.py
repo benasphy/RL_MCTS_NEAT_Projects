@@ -13,3 +13,10 @@ class MiniRainbowNetwork(nn.Module):
             nn.Linear(4, 64), # Simulating a 4D state input
             nn.ReLU()
         )
+        
+        # 2. Dueling Value Stream: Predicts distribution atoms for V(s)
+        self.value_stream = nn.Sequential(
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, num_atoms) # Outputs a value across the 51 atoms
+        )
