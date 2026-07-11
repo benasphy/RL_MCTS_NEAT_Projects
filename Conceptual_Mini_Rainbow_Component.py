@@ -53,3 +53,10 @@ simulated_state = torch.randn(1, 4) # 1 sample batch, 4 state dimensions
 
 # Run forward pass to get categorical probability distributions
 action_distributions = model(simulated_state)
+
+# Calculate the expected Q-value out of the distribution by taking the inner product with Z
+expected_q_values = torch.sum(action_distributions * z_support, dim=-1)
+
+print("--- Mini-Rainbow Output Check ---")
+print("Raw Probability Distribution Shape (Batch, Actions, Atoms):", list(action_distributions.shape))
+print("Calculated Expected Q-Values for Actions [0, 1]:", expected_q_values.detach().numpy()[0])
