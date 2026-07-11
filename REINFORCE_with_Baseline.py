@@ -51,3 +51,19 @@ for episode in range(EPISODES):
     states, actions, rewards = [], [], []
     state = env.reset()
     done = False
+    
+    # 1. Collect a full Monte Carlo episode trajectory
+    while not done:
+        state_t = torch.from_numpy(state).float()
+        probs = policy(state_t)
+        
+        # Create a PyTorch categorical distribution to sample cleanly from probabilities
+        dist = Categorical(probs)
+        action = dist.sample().item()
+        
+        next_state, reward, done = env.step(action)
+        
+        states.append(state_t)
+        actions.append(action)
+        rewards.append(reward)
+        state = next_state
