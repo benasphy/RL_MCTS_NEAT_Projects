@@ -10,7 +10,7 @@ class MiniRainbowNetwork(nn.Module):
         
         # 1. Base Feature Extraction
         self.feature_backbone = nn.Sequential(
-            nn.Linear(4, 64), # Simulating a 4D state input
+            nn.Linear(4, 64), 
             nn.ReLU()
         )
         
