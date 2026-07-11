@@ -13,3 +13,8 @@ MEMORY_SIZE = 10000
 TARGET_UPDATE_FREQ = 100
 EPSILON = 0.1
 EPISODES = 100
+
+class DiscreteLineEnv:
+    def __init__(self):
+        self.state = 0.0
+        self.goal = 1.0
