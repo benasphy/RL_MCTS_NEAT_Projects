@@ -91,3 +91,10 @@ for episode in range(EPISODES):
         
         # Policy Gradient standard minimization loss term (Negative sign for Gradient *Ascent*)
         policy_loss.append(-log_prob * advantage)
+    # 4. Backpropagation Update
+    optimizer.zero_grad()
+    # Sum up individual transition losses and update network weights
+    torch.stack(policy_loss).sum().backward()
+    optimizer.step()
+
+print("Training Complete.\n")
