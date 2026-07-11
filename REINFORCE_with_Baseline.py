@@ -46,3 +46,8 @@ GAMMA = 0.99
 EPISODES = 400
 
 print("--- Training REINFORCE Policy Gradient Agent ---")
+
+for episode in range(EPISODES):
+    states, actions, rewards = [], [], []
+    state = env.reset()
+    done = False
