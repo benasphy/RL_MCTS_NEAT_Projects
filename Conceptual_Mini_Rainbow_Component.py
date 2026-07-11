@@ -18,7 +18,7 @@ class MiniRainbowNetwork(nn.Module):
         self.value_stream = nn.Sequential(
             nn.Linear(64, 32),
             nn.ReLU(),
-            nn.Linear(32, num_atoms) # Outputs a value across the 51 atoms
+            nn.Linear(32, num_atoms) 
         )
         
         # 3. Dueling Advantage Stream: Predicts distribution atoms for A(s,a)
