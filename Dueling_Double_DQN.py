@@ -63,3 +63,16 @@ class DuelingQNetwork(nn.Module):
         # Dueling Combine Rule: Q(s,a) = V(s) + (A(s,a) - Mean(A))
         q_values = values + (advantages - advantages.mean(dim=1, keepdim=True))
         return q_values
+
+# --- Initialization ---
+env = DiscreteLineEnv()
+online_net = DuelingQNetwork()
+target_net = DuelingQNetwork()
+target_net.load_state_dict(online_net.state_dict())
+
+optimizer = optim.Adam(online_net.parameters(), lr=LR)
+loss_fn = nn.MSELoss()
+replay_buffer = deque(maxlen=MEMORY_SIZE)
+total_steps = 0
+
+print("--- Training Dueling Double-DQN Engine ---")
