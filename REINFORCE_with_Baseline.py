@@ -20,3 +20,19 @@ class DiscreteLineEnv:
         self.state = min(self.goal, self.state)
         reward = -1.0 if self.state < self.goal else 0.0
         return np.array([self.state], dtype=np.float32), reward, (self.state >= self.goal)
+
+# =====================================================================
+# THE REINFORCE NETWORK
+# =====================================================================
+class PolicyNetwork(nn.Module):
+    def __init__(self):
+        super(PolicyNetwork, self).__init__()
+        # Outputs probabilities for 2 discrete actions: [Stay, Move]
+        self.policy_head = nn.Sequential(
+            nn.Linear(1, 32),
+            nn.ReLU(),
+            nn.Linear(32, 2),
+            nn.Softmax(dim=-1) # Guarantees outputs sum to a valid 1.0 probability distribution
+        )
+    def forward(self, x):
+        return self.policy_head(x)
