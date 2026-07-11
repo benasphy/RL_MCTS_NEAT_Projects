@@ -98,3 +98,12 @@ for episode in range(EPISODES):
     optimizer.step()
 
 print("Training Complete.\n")
+
+# --- Inference Check ---
+policy.eval()
+print("--- Directly Optimized Action Probabilities Profile ---")
+with torch.no_grad():
+    for test_pos in [0.1, 0.5, 0.9]:
+        st = torch.tensor([test_pos], dtype=torch.float32)
+        probs = policy(st).numpy()
+        print(f"Continuous State: {test_pos:<3} -> Probabilities: [Stay: {probs[0]:.2f}, Move: {probs[1]:.2f}]")
