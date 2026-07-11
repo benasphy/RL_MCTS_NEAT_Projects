@@ -67,3 +67,15 @@ for episode in range(EPISODES):
         actions.append(action)
         rewards.append(reward)
         state = next_state
+        
+    # 2. Compute discounted returns (G_t) backwards
+    G = 0
+    returns = []
+    for r in reversed(rewards):
+        G = r + GAMMA * G
+        returns.insert(0, G)
+    returns = torch.tensor(returns)
+    
+    # Simple Running Baseline for Variance Reduction (Mean of current trajectory returns)
+    baseline = returns.mean()
+    advantages = returns - baseline
