@@ -36,3 +36,13 @@ class PolicyNetwork(nn.Module):
         )
     def forward(self, x):
         return self.policy_head(x)
+
+# --- Initialization ---
+env = DiscreteLineEnv()
+policy = PolicyNetwork()
+optimizer = optim.Adam(policy.parameters(), lr=0.01)
+
+GAMMA = 0.99
+EPISODES = 400
+
+print("--- Training REINFORCE Policy Gradient Agent ---")
