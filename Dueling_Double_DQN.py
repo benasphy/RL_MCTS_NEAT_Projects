@@ -54,3 +54,12 @@ class DuelingQNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(32, 2) # 2 actions: [Stay, Move]
         )
+    
+    def forward(self, x):
+        features = self.feature_network(x)
+        values = self.value_stream(features)
+        advantages = self.advantage_stream(features)
+        
+        # Dueling Combine Rule: Q(s,a) = V(s) + (A(s,a) - Mean(A))
+        q_values = values + (advantages - advantages.mean(dim=1, keepdim=True))
+        return q_values
