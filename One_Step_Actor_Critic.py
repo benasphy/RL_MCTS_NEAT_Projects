@@ -19,3 +19,22 @@ class DiscreteLineEnv:
         self.state = min(self.goal, self.state)
         reward = -1.0 if self.state < self.goal else 0.0
         return np.array([self.state], dtype=np.float32), reward, (self.state >= self.goal)
+
+# =====================================================================
+# UNIFIED ACTOR-CRITIC NETWORK
+# =====================================================================
+class ActorCriticNetwork(nn.Module):
+    def __init__(self):
+        super(ActorCriticNetwork, self).__init__()
+        # Shared feature representation layer
+        self.shared_trunk = nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU()
+        )
+        # Head 1: The Actor (Outputs action probabilities)
+        self.actor_head = nn.Sequential(
+            nn.Linear(64, 2),
+            nn.Softmax(dim=-1)
+        )
+        # Head 2: The Critic (Outputs a single state value estimation V(s))
+        self.critic_head = nn.Linear(64, 1)
