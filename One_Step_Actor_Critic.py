@@ -44,3 +44,14 @@ class ActorCriticNetwork(nn.Module):
         action_probs = self.actor_head(features)
         state_value = self.critic_head(features)
         return action_probs, state_value
+
+# --- Initialization ---
+env = DiscreteLineEnv()
+ac_model = ActorCriticNetwork()
+# A single optimizer adjusts both actor and critic parameters simultaneously
+optimizer = optim.Adam(ac_model.parameters(), lr=0.005)
+
+GAMMA = 0.99
+EPISODES = 300
+
+print("--- Training Online One-Step Actor-Critic Agent ---")
