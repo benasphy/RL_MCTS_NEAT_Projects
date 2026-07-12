@@ -40,3 +40,14 @@ class ParallelDiscreteLineEnv:
                 dones[i] = False
                 
         return np.copy(self.states), rewards, dones
+
+class A2CNetwork(nn.Module):
+    def __init__(self):
+        super(A2CNetwork, self).__init__()
+        self.trunk = nn.Sequential(nn.Linear(1, 64), nn.ReLU())
+        self.actor = nn.Sequential(nn.Linear(64, 2), nn.Softmax(dim=-1))
+        self.critic = nn.Linear(64, 1)
+        
+    def forward(self, x):
+        features = self.trunk(x)
+        return self.actor(features), self.critic(features)
