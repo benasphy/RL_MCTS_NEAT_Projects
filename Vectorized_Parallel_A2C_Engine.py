@@ -51,3 +51,11 @@ class A2CNetwork(nn.Module):
     def forward(self, x):
         features = self.trunk(x)
         return self.actor(features), self.critic(features)
+
+# --- Initialization ---
+envs = ParallelDiscreteLineEnv(num_envs=NUM_ENVS)
+model = A2CNetwork()
+optimizer = optim.Adam(model.parameters(), lr=LR)
+
+states = envs.reset()
+print(f"--- Training Vectorized A2C Engine across {NUM_ENVS} Parallel Envs ---")
