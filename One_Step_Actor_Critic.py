@@ -55,3 +55,52 @@ GAMMA = 0.99
 EPISODES = 300
 
 print("--- Training Online One-Step Actor-Critic Agent ---")
+
+for episode in range(EPISODES):
+    state = env.reset()
+    done = False
+    
+    while not done:
+        state_tensor = torch.from_numpy(state).float()
+        
+        # 1. Forward Pass: Get policy distribution and state value estimation simultaneously
+        action_probs, v_state = ac_model(state_tensor)
+        
+        dist = Categorical(action_probs)
+        action = dist.sample()
+        
+        # 2. Interact with the environment
+        next_state, reward, done = env.step(action.item())
+        reward_tensor = torch.tensor([reward], dtype=torch.float32)
+        
+        # 3. Calculate TD Target and TD Error (Advantage)
+        if done:
+            td_target = reward_tensor
+        else:
+            next_state_tensor = torch.from_numpy(next_state).float()
+            # Detach the next state value prediction to isolate gradients
+            with torch.no_grad():
+                _, v_next = ac_model(next_state_tensor)
+            td_target = reward_tensor + GAMMA * v_next
+            
+        td_error = td_target - v_state # This is our calculated Advantage
+        
+        # 4. Define Composite Loss
+        # Critic Loss: Standard Mean Squared Error targeting the TD value
+        critic_loss = td_error.pow(2)
+        
+        # Actor Loss: Negative log-probability scaled by the Critic's TD error
+        log_prob = dist.log_prob(action)
+        actor_loss = -log_prob * td_error.detach()
+        
+        # Total combined loss
+        total_loss = actor_loss + 0.5 * critic_loss
+        
+        # 5. Optimize Entire Architecture
+        optimizer.zero_grad()
+        total_loss.backward()
+        optimizer.step()
+        
+        state = next_state
+
+print("Training Complete.\n")
