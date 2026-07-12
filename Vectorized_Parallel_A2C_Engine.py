@@ -21,3 +21,22 @@ class ParallelDiscreteLineEnv:
     def reset(self):
         self.states = np.zeros((self.num_envs, 1), dtype=np.float32)
         return np.copy(self.states)
+
+    def step(self, actions):
+        rewards = np.zeros(self.num_envs, dtype=np.float32)
+        dones = np.zeros(self.num_envs, dtype=bool)
+        
+        for i in range(self.num_envs):
+            if actions[i] == 1: # Move
+                self.states[i] += np.random.uniform(0.08, 0.18)
+            self.states[i] = min(self.goal, self.states[i])
+            
+            if self.states[i] >= self.goal:
+                rewards[i] = 0.0
+                dones[i] = True
+                self.states[i] = 0.0 # Auto-reset env independently
+            else:
+                rewards[i] = -1.0
+                dones[i] = False
+                
+        return np.copy(self.states), rewards, dones
