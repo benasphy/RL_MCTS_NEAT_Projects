@@ -104,3 +104,12 @@ for episode in range(EPISODES):
         state = next_state
 
 print("Training Complete.\n")
+
+# --- Inference Check ---
+ac_model.eval()
+print("--- Actor-Critic Learned Profiles ---")
+with torch.no_grad():
+    for test_pos in [0.2, 0.8]:
+        st = torch.tensor([test_pos], dtype=torch.float32)
+        probs, val = ac_model(st)
+        print(f"Position: {test_pos:<3} | Critic V(s): {val.item():.2f} | Actor Probs: [Stay: {probs.numpy()[0]:.2f}, Move: {probs.numpy()[1]:.2f}]")
