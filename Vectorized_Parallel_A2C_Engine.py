@@ -116,3 +116,12 @@ for update in range(TOTAL_UPDATES):
     optimizer.step()
 
 print("Training Complete.\n")
+
+# --- Inference Check ---
+model.eval()
+print("--- Unified A2C Evaluator Pass ---")
+with torch.no_grad():
+    for test_pos in [0.1, 0.9]:
+        st = torch.tensor([[test_pos]], dtype=torch.float32)
+        probs, val = model(st)
+        print(f"Position: {test_pos:<3} | Critic V(s): {val.item():.2f} | Actor [Stay, Move]: {probs.numpy()[0]}")
