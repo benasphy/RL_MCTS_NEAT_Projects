@@ -59,3 +59,60 @@ optimizer = optim.Adam(model.parameters(), lr=LR)
 
 states = envs.reset()
 print(f"--- Training Vectorized A2C Engine across {NUM_ENVS} Parallel Envs ---")
+
+for update in range(TOTAL_UPDATES):
+    # Storage for N-step rollouts across all parallel environments
+    mb_states, mb_actions, mb_rewards, mb_dones, mb_log_probs = [], [], [], [], []
+    
+    # 1. Collect N-step trajectories across parallel channels
+    for _ in range(N_STEPS):
+        states_t = torch.from_numpy(states)
+        probs, values = model(states_t)
+        
+        dist = Categorical(probs)
+        actions = dist.sample()
+        
+        next_states, rewards, dones = envs.step(actions.numpy())
+        
+        mb_states.append(states_t)
+        mb_actions.append(actions)
+        mb_rewards.append(torch.from_numpy(rewards))
+        mb_dones.append(torch.from_numpy(dones.astype(np.float32)))
+        mb_log_probs.append(dist.log_prob(actions))
+        
+        states = next_states
+
+    # 2. Compute Bootstrap Values for the final horizon state
+    with torch.no_grad():
+        _, next_values = model(torch.from_numpy(states))
+        next_values = next_values.squeeze(-1)
+        
+    # 3. Calculate N-step targets moving backwards
+    mb_returns = torch.zeros((N_STEPS, NUM_ENVS))
+    g_return = next_values
+    for t in reversed(range(N_STEPS)):
+        # If the environment reset at this step, set next value to 0
+        g_return = mb_rewards[t] + GAMMA * g_return * (1 - mb_dones[t])
+        mb_returns[t] = g_return
+
+    # Flatten collected lists into long batch tensors for optimization pass
+    states_batch = torch.cat(mb_states, dim=0)
+    actions_batch = torch.cat(mb_actions, dim=0)
+    returns_batch = mb_returns.view(-1, 1)
+    log_probs_batch = torch.cat(mb_log_probs, dim=0).view(-1, 1)
+    
+    # 4. Compute Loss and Advantages
+    _, values_batch = model(states_batch)
+    advantages_batch = returns_batch - values_batch
+    
+    critic_loss = advantages_batch.pow(2).mean()
+    actor_loss = -(log_probs_batch * advantages_batch.detach()).mean()
+    
+    # Total A2C Loss
+    total_loss = actor_loss + 0.5 * critic_loss
+    
+    optimizer.zero_grad()
+    total_loss.backward()
+    optimizer.step()
+
+print("Training Complete.\n")
