@@ -38,3 +38,9 @@ class ActorCriticNetwork(nn.Module):
         )
         # Head 2: The Critic (Outputs a single state value estimation V(s))
         self.critic_head = nn.Linear(64, 1)
+        
+    def forward(self, x):
+        features = self.shared_trunk(x)
+        action_probs = self.actor_head(features)
+        state_value = self.critic_head(features)
+        return action_probs, state_value
