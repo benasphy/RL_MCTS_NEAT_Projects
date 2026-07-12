@@ -17,3 +17,7 @@ class ParallelDiscreteLineEnv:
         self.num_envs = num_envs
         self.states = np.zeros((num_envs, 1), dtype=np.float32)
         self.goal = 1.0
+    
+    def reset(self):
+        self.states = np.zeros((self.num_envs, 1), dtype=np.float32)
+        return np.copy(self.states)
