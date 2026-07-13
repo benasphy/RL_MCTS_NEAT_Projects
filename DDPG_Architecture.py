@@ -63,3 +63,34 @@ ou_noise = OUNoise()
 TAU = 0.005 # Polyak soft-update scale coefficient
 
 print("--- Initializing Continuous DDPG Framework ---")
+
+# Simulate collecting a transition state from environment
+simulated_state = torch.randn(1, 3) # Batch size of 1, 3 state features
+
+# 1. Action Selection with Exploration Noise
+actor.eval()
+with torch.no_grad():
+    raw_action = actor(simulated_state)
+    noise = ou_noise.sample()
+    exploration_action = raw_action + noise
+
+print(f"Raw Deterministic Action Output: {raw_action.item():.4f}")
+print(f"Exploration Action (With OU Noise): {exploration_action.item():.4f}")
+
+# 2. Critic Evaluation & Polyak Target Synchronization Check
+# Mutate online weights artificially to simulate an optimization update step
+with torch.no_grad():
+    critic.fc2.weight.add_(0.5)
+    actor.network[2].weight.add_(0.5)
+
+# Execute Polyak Soft Target Updates across both network pairs
+def soft_update(online_model, target_model, tau):
+    for target_param, online_param in zip(target_model.parameters(), online_model.parameters()):
+        target_param.data.copy_(tau * online_param.data + (1.0 - tau) * target_param.data)
+
+soft_update(actor, target_actor, TAU)
+soft_update(critic, target_critic, TAU)
+
+print("\n--- Target Synchronization Log ---")
+print(f"Online Critic Weight Element Sample: {critic.fc2.weight[0,0].item():.4f}")
+print(f"Target Critic Weight Element Sample: {target_critic.fc2.weight[0,0].item():.4f}")
