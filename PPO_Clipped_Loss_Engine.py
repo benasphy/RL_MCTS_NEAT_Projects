@@ -61,3 +61,12 @@ ppo_actor_loss = -torch.min(surr1, surr2).mean()
 optimizer.zero_grad()
 ppo_actor_loss.backward()
 optimizer.step()
+
+# 4. Check results after optimization pass
+with torch.no_grad():
+    probs_post = policy_net(simulated_states)
+    ratios_post = torch.exp(dist_new.log_prob(simulated_actions) - old_log_probs)
+
+print("\n--- Post-Optimization Check ---")
+print(f"New Action Probabilities: {probs_post.numpy()[:, 1]}")
+print(f"Resulting Ratios:         {ratios_post.numpy()}")
