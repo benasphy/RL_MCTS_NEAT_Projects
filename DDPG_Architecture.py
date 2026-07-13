@@ -43,3 +43,23 @@ class OUNoise:
         dx = self.theta * (self.mu - self.state) + self.sigma * torch.randn(len(self.state))
         self.state += dx
         return self.state
+
+# =====================================================================
+# TRAINING PIPELINE DEMO
+# =====================================================================
+# Instantiate live networks
+actor = DDPGActor()
+critic = DDPGCritic()
+
+# Instantiate target networks
+target_actor = DDPGActor()
+target_critic = DDPGCritic()
+
+# Force initial weights to match perfectly
+target_actor.load_state_dict(actor.state_dict())
+target_critic.load_state_dict(critic.state_dict())
+
+ou_noise = OUNoise()
+TAU = 0.005 # Polyak soft-update scale coefficient
+
+print("--- Initializing Continuous DDPG Framework ---")
