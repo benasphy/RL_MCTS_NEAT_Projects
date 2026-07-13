@@ -29,3 +29,12 @@ optimizer = optim.Adam(policy_net.parameters(), lr=LR)
 simulated_states = torch.randn(3, 2)
 simulated_actions = torch.tensor([1, 0, 1])
 simulated_advantages = torch.tensor([2.5, -1.2, 4.0], dtype=torch.float32)
+
+# 2. Extract and fix the Old Log Probabilities (simulating the behavior data)
+with torch.no_grad():
+    probs_old = policy_net(simulated_states)
+    dist_old = Categorical(probs_old)
+    old_log_probs = dist_old.log_prob(simulated_actions)
+
+print("--- Starting PPO Clip Step Optimization ---")
+print(f"Old Action Probabilities: {probs_old.numpy()[:, 1]}")
