@@ -29,3 +29,17 @@ class DDPGCritic(nn.Module):
         x = torch.cat([state, action], dim=-1)
         x = torch.relu(self.fc1(x))
         return self.fc2(x)
+
+# --- Ornstein-Uhlenbeck Exploration Noise Pattern ---
+class OUNoise:
+    def __init__(self, action_dim=1, mu=0.0, theta=0.15, sigma=0.2):
+        self.mu = mu
+        self.theta = theta
+        self.sigma = sigma
+        self.state = torch.ones(action_dim) * mu
+
+    def sample(self):
+        # Continuous mean reverting random walk simulation
+        dx = self.theta * (self.mu - self.state) + self.sigma * torch.randn(len(self.state))
+        self.state += dx
+        return self.state
