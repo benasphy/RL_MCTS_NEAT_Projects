@@ -38,3 +38,26 @@ with torch.no_grad():
 
 print("--- Starting PPO Clip Step Optimization ---")
 print(f"Old Action Probabilities: {probs_old.numpy()[:, 1]}")
+
+# 3. Perform a diagnostic optimization update step
+policy_net.train()
+
+# Forward pass to get new probabilities from the live network
+probs_new = policy_net(simulated_states)
+dist_new = Categorical(probs_new)
+new_log_probs = dist_new.log_prob(simulated_actions)
+
+# Calculate the critical Probability Ratio: r(theta)
+ratios = torch.exp(new_log_probs - old_log_probs)
+
+# Compute the two arms of the PPO Clipped Objective
+surr1 = ratios * simulated_advantages
+surr2 = torch.clamp(ratios, 1.0 - EPSILON, 1.0 + EPSILON) * simulated_advantages
+
+# PPO Loss: Negative sign because we maximize via Gradient Ascent
+# Taking the minimum of the unclipped and clipped surrogates
+ppo_actor_loss = -torch.min(surr1, surr2).mean()
+
+optimizer.zero_grad()
+ppo_actor_loss.backward()
+optimizer.step()
