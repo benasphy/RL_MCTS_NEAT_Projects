@@ -35,3 +35,7 @@ class DynaAgent:
         if random.random() < epsilon:
             return random.randint(0, 1)
         return np.argmax(self.q_table[state_idx])
+    
+    def discretize(self, state):
+        # Scale continuous state [0.0, 1.0] to table index [0, 10]
+        return int(np.clip(state * 10, 0, 10))
