@@ -47,3 +47,19 @@ class SACActor(nn.Module):
         log_prob = log_prob.sum(dim=-1, keepdim=True)
         
         return action, log_prob
+
+# =====================================================================
+# ADAPTIVE TEMPERATURE TUNING ENGINE
+# =====================================================================
+# Dimensions: 1 continuous action
+action_dim = 1
+target_entropy = -float(action_dim) # Common heuristic: -dim(A)
+
+# Setup dual temperature parameters
+log_alpha = torch.zeros(1, requires_grad=True)
+alpha_optimizer = optim.Adam([log_alpha], lr=0.01)
+
+actor = SACActor(state_dim=3, action_dim=1)
+simulated_state = torch.randn(1, 3)
+
+print("--- Initializing Soft Actor-Critic Components ---")
