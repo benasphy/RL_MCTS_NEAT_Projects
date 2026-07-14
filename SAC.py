@@ -29,3 +29,21 @@ class SACActor(nn.Module):
         std = torch.exp(log_std)
         
         return mean, std
+
+    def sample_action(self, state):
+        mean, std = self.forward(state)
+        
+        # 1. Reparameterization Trick: sample from standard normal noise
+        normal = torch.randn_like(mean)
+        raw_action = mean + std * normal
+        
+        # 2. Squash action to [-1.0, 1.0] bound
+        action = torch.tanh(raw_action)
+        
+        # 3. Calculate squashed log probability with the Jacobian correction
+        # log_prob = log_prob(raw_action) - sum(log(1 - tanh^2(raw_action)))
+        log_prob_normal = -0.5 * (((raw_action - mean) / std).pow(2) + 2 * torch.log(std) + np.log(2 * np.pi))
+        log_prob = log_prob_normal - torch.log(1.0 - action.pow(2) + 1e-6)
+        log_prob = log_prob.sum(dim=-1, keepdim=True)
+        
+        return action, log_prob
