@@ -18,3 +18,14 @@ class SACActor(nn.Module):
         )
         self.mean_head = nn.Linear(64, action_dim)
         self.log_std_head = nn.Linear(64, action_dim)
+    
+    def forward(self, state):
+        features = self.shared(state)
+        mean = self.mean_head(features)
+        
+        # Clip log_std to maintain numerical stability in exponentials
+        log_std = self.log_std_head(features)
+        log_std = torch.clamp(log_std, self.log_std_min, self.log_std_max)
+        std = torch.exp(log_std)
+        
+        return mean, std
