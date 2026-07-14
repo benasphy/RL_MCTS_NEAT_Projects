@@ -89,3 +89,48 @@ class DynaAgent:
                 best_next_q = np.max(self.q_table[sim_next_idx])
                 td_target = sim_reward + gamma * best_next_q
                 self.q_table[sim_state_idx, sim_action] += 0.1 * (td_target - self.q_table[sim_state_idx, sim_action])
+
+# =====================================================================
+# SIMULATED ENVIRONMENT & TRAINING LOOP
+# =====================================================================
+class SimpleEnv:
+    def __init__(self): self.state = 0.0
+    def step(self, action):
+        if action == 1: # Move action
+            self.state += 0.2
+        self.state = min(1.0, self.state)
+        reward = -1.0 if self.state < 1.0 else 0.0
+        return self.state, reward, (self.state >= 1.0)
+
+env = SimpleEnv()
+agent = DynaAgent()
+
+print("--- Training Dyna Model-Based Agent ---")
+for episode in range(25):
+    state = 0.0
+    done = False
+    
+    while not done:
+        state_idx = agent.discretize(state)
+        action = agent.get_action(state_idx)
+        
+        # Step in the real environment
+        next_state, reward, done = env.step(action)
+        next_state_idx = agent.discretize(next_state)
+        
+        # Direct Q-Learning update (Model-Free update)
+        best_next_q = np.max(agent.q_table[next_state_idx])
+        td_target = reward + 0.9 * best_next_q
+        agent.q_table[state_idx, action] += 0.1 * (td_target - agent.q_table[state_idx, action])
+        
+        # Save to memory and train the world model
+        agent.real_memory.append((state, action, next_state))
+        model_loss = agent.train_dynamics()
+        
+        # Dyna Planning: Run 15 background imaginations using the model
+        agent.dyna_planning(num_planning_steps=15)
+        
+        state = next_state
+    env.state = 0.0 # reset
+
+print("Training Complete.\n")
