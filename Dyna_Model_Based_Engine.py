@@ -39,3 +39,22 @@ class DynaAgent:
     def discretize(self, state):
         # Scale continuous state [0.0, 1.0] to table index [0, 10]
         return int(np.clip(state * 10, 0, 10))
+    
+    def train_dynamics(self, batch_size=8):
+        if len(self.real_memory) < batch_size:
+            return
+        
+        # Sample mini-batch of real experiences
+        batch = random.sample(self.real_memory, batch_size)
+        states = torch.tensor([[b[0]] for b in batch], dtype=torch.float32)
+        actions = torch.tensor([[b[1]] for b in batch], dtype=torch.float32)
+        next_states = torch.tensor([[b[2]] for b in batch], dtype=torch.float32)
+        
+        # Train model to predict the next state
+        pred_next_states = self.dynamics_model(states, actions)
+        loss = nn.MSELoss()(pred_next_states, next_states)
+        
+        self.model_optimizer.zero_grad()
+        loss.backward()
+        self.model_optimizer.step()
+        return loss.item()
