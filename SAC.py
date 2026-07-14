@@ -68,3 +68,11 @@ print("--- Initializing Soft Actor-Critic Components ---")
 action, log_prob = actor.sample_action(simulated_state)
 print(f"Sampled squashed action:   {action.detach().numpy()[0]}")
 print(f"Action Log-Probability:    {log_prob.detach().numpy()[0]}")
+
+# Step 2: Compute Temperature Loss & Perform Gradient Step
+alpha = torch.exp(log_alpha) # Detach or scale later for losses
+alpha_loss = -(log_alpha * (log_prob.detach() + target_entropy)).mean()
+
+alpha_optimizer.zero_grad()
+alpha_loss.backward()
+alpha_optimizer.step()
