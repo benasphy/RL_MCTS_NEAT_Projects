@@ -30,3 +30,8 @@ class DynaAgent:
         self.dynamics_model = DynamicsModel()
         self.model_optimizer = optim.Adam(self.dynamics_model.parameters(), lr=0.01)
         self.real_memory = [] # Store real world experiences
+    
+    def get_action(self, state_idx, epsilon=0.1):
+        if random.random() < epsilon:
+            return random.randint(0, 1)
+        return np.argmax(self.q_table[state_idx])
