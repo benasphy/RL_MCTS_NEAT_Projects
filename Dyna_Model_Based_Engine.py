@@ -58,3 +58,34 @@ class DynaAgent:
         loss.backward()
         self.model_optimizer.step()
         return loss.item()
+    
+    def dyna_planning(self, num_planning_steps=10, gamma=0.9):
+        """ The Imagination Step: Update Q-values using the learned model """
+        if len(self.real_memory) < 5:
+            return
+            
+        self.dynamics_model.eval()
+        with torch.no_grad():
+            for _ in range(num_planning_steps):
+                # 1. Sample a state that we have actually visited in the past
+                real_transition = random.choice(self.real_memory)
+                sim_state_val = real_transition[0]
+                sim_state_idx = self.discretize(sim_state_val)
+                
+                # 2. Select a random hypothetical action
+                sim_action = random.randint(0, 1)
+                
+                # 3. Query the World Model for the next state
+                state_tensor = torch.tensor([[sim_state_val]], dtype=torch.float32)
+                action_tensor = torch.tensor([[float(sim_action)]], dtype=torch.float32)
+                sim_next_state_val = self.dynamics_model(state_tensor, action_tensor).item()
+                sim_next_state_val = np.clip(sim_next_state_val, 0.0, 1.0)
+                sim_next_idx = self.discretize(sim_next_state_val)
+                
+                # 4. Compute reward analytically (assuming known reward function for simplicity)
+                sim_reward = -1.0 if sim_next_state_val < 1.0 else 0.0
+                
+                # 5. Update the Q-table using simulated transition (Planning)
+                best_next_q = np.max(self.q_table[sim_next_idx])
+                td_target = sim_reward + gamma * best_next_q
+                self.q_table[sim_state_idx, sim_action] += 0.1 * (td_target - self.q_table[sim_state_idx, sim_action])
