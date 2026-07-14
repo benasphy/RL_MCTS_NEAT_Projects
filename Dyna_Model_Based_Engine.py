@@ -134,3 +134,12 @@ for episode in range(25):
     env.state = 0.0 # reset
 
 print("Training Complete.\n")
+
+# Evaluate dynamics prediction accuracy
+test_state = torch.tensor([[0.4]], dtype=torch.float32)
+test_action = torch.tensor([[1.0]], dtype=torch.float32)
+predicted_next = agent.dynamics_model(test_state, test_action).item()
+print("--- World Model Diagnostic Pass ---")
+print(f"Input State: 0.4 | Action: Move (1.0)")
+print(f"True Next State: 0.6000")
+print(f"Predicted Next State: {predicted_next:.4f}")
