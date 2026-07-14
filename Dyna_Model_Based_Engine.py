@@ -20,3 +20,13 @@ class DynamicsModel(nn.Module):
     def forward(self, state, action):
         x = torch.cat([state, action], dim=-1)
         return self.net(x)
+
+# =====================================================================
+# DYNA MODEL-BASED PLANNING ENGINE
+# =====================================================================
+class DynaAgent:
+    def __init__(self, state_dim=1, action_dim=2):
+        self.q_table = np.zeros((11, action_dim)) # Tabular states 0 to 10
+        self.dynamics_model = DynamicsModel()
+        self.model_optimizer = optim.Adam(self.dynamics_model.parameters(), lr=0.01)
+        self.real_memory = [] # Store real world experiences
