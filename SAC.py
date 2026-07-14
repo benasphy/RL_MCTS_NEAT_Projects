@@ -76,3 +76,8 @@ alpha_loss = -(log_alpha * (log_prob.detach() + target_entropy)).mean()
 alpha_optimizer.zero_grad()
 alpha_loss.backward()
 alpha_optimizer.step()
+
+new_alpha = torch.exp(log_alpha).item()
+print(f"\nTarget Entropy (H0):       {target_entropy}")
+print(f"Calculated Alpha Loss:     {alpha_loss.item():.4f}")
+print(f"Updated Entropy Temp (α):  {new_alpha:.4f}")
