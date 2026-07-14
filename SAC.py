@@ -63,3 +63,8 @@ actor = SACActor(state_dim=3, action_dim=1)
 simulated_state = torch.randn(1, 3)
 
 print("--- Initializing Soft Actor-Critic Components ---")
+
+# Step 1: Sample Action & Log Prob
+action, log_prob = actor.sample_action(simulated_state)
+print(f"Sampled squashed action:   {action.detach().numpy()[0]}")
+print(f"Action Log-Probability:    {log_prob.detach().numpy()[0]}")
