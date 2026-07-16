@@ -64,3 +64,25 @@ print(f"Novel State Curiosity Bonus:    {get_intrinsic_reward(novel_state):.4f}"
 # 2. Simulate training: The agent visits the "familiar_state" repeatedly
 print("\n[Training] Agent spends time exploring state 1.0...")
 predictor_net.train()
+
+for epoch in range(100):
+    # Pass familiar_state through both networks
+    target_out = target_net(familiar_state)
+    pred_out = predictor_net(familiar_state)
+    
+    loss = torch.mean((pred_out - target_out) ** 2)
+    
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+# 3. Evaluate curiosity values post training
+print("\n--- Post-Training Evaluation ---")
+bonus_familiar = get_intrinsic_reward(familiar_state)
+bonus_novel = get_intrinsic_reward(novel_state)
+
+print(f"Familiar State (1.0) Curiosity Bonus: {bonus_familiar:.6f}")
+print(f"Novel State (9.0) Curiosity Bonus:    {bonus_novel:.4f}")
+
+if bonus_novel > (bonus_familiar * 10):
+    print("\n--> [Success] The agent got bored of state 1.0. It is now highly motivated to seek out state 9.0!")
