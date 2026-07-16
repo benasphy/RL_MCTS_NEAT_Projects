@@ -81,3 +81,13 @@ for dagger_round in range(3):
     aggregated_states = torch.cat([aggregated_states, new_states_tensor], dim=0)
     aggregated_actions = torch.cat([aggregated_actions, expert_corrective_actions], dim=0)
     print(f"DAgger Round {dagger_round+1} complete. Total dataset size: {len(aggregated_states)}")
+    
+
+# Evaluate DAgger Controller
+print("\n--- Deploying DAgger Controller ---")
+position = 0.5
+print(f"Initial Drift: {position:.4f}")
+for step in range(3):
+    action = student_dagger(torch.tensor([[position]], dtype=torch.float32)).item()
+    position = position + action + np.random.normal(0.05, 0.02)
+    print(f"Step {step+1} | Applied Action: {action: .4f} | Position: {position:.4f}")
