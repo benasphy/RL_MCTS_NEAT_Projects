@@ -20,3 +20,18 @@ class RNDTarget(nn.Module):
 
     def forward(self, x):
         return self.fc(x)
+
+class RNDPredictor(nn.Module):
+    """Trainable network designed to match the target network's output."""
+    def __init__(self, state_dim=1, latent_dim=10):
+        super(RNDPredictor, self).__init__()
+        self.fc = nn.Sequential(
+            nn.Linear(state_dim, 32),
+            nn.ReLU(),
+            nn.Linear(32, 32),
+            nn.ReLU(),
+            nn.Linear(32, latent_dim)
+        )
+
+    def forward(self, x):
+        return self.fc(x)
