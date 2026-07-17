@@ -57,3 +57,12 @@ total_loss = td_loss + cql_loss_penalty
 optimizer.zero_grad()
 total_loss.backward()
 optimizer.step()
+
+# 3. Post-Update Evaluation
+q_net.eval()
+with torch.no_grad():
+    updated_q = q_net(state)
+print("\n--- Post-CQL-Update Q-Values ---")
+print(f"Dataset Action (0) Q-Value: {updated_q[0, 0].item():.4f} (Targeted via TD)")
+print(f"Unseen Action (1) Q-Value:  {updated_q[0, 1].item():.4f} (Suppressed)")
+print(f"Unseen Action (2) Q-Value:  {updated_q[0, 2].item():.4f} (Suppressed)")
